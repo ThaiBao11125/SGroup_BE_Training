@@ -1,0 +1,23 @@
+{
+  "name": "sgroup_be_training",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThaiBao11125/SGroup_BE_Training.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThaiBao11125/SGroup_BE_Training/issues"
+  },
+  "homepage": "https://github.com/ThaiBao11125/SGroup_BE_Training#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
