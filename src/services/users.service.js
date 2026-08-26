@@ -1,5 +1,5 @@
-import { readData } from "../../utils/readData.js";
-import { writeData } from "../../utils/writeData.js";
+import { readData } from "../repository/readData.js";
+import { writeData } from "../repository/writeData.js";
 
 export const getAllUser = async () => {
   try {
