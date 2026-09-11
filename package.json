@@ -18,7 +18,9 @@
   "homepage": "https://github.com/ThaiBao11125/SGroup_BE_Training#readme",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "express-validator": "^7.3.2"
+    "express-validator": "^7.3.2",
+    "pg": "^8.23.0"
   }
 }
