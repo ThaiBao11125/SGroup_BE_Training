@@ -12,6 +12,7 @@ CREATE TABLE users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    age INT CHECK (age >= 0) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'MEMBER',
     avatar_url VARCHAR(500),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -22,6 +23,7 @@ CREATE TABLE users (
 );
 
 COMMENT ON TABLE users IS 'Bảng lưu trữ thông tin người dùng trong hệ thống S-Group';
+COMMENT ON COLUMN users.age IS 'Tuổi của người dùng';
 COMMENT ON COLUMN users.role IS 'Vai trò tài khoản: ADMIN hoặc MEMBER (Mentor là Member phụ trách lớp)';
 
 CREATE TABLE classes (

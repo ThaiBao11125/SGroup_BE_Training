@@ -1,5 +1,6 @@
 import express from "express";
 import router from "./routes/index.js";
+import { config } from "./config/env.config.js";
 import errorHandler from "./middleware/errorHandler.js";
 import { connectDB } from "./config/database.config.js";
 

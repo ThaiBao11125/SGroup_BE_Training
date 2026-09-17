@@ -18,9 +18,11 @@
   "homepage": "https://github.com/ThaiBao11125/SGroup_BE_Training#readme",
   "description": "",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.0"
   }
 }
