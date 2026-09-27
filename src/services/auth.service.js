@@ -1,4 +1,3 @@
-// src/service/auth.service.js
 import * as userRepository from "../repository/user.repository.js";
 import { ConflictError, UnauthorizedError, NotFoundError } from "../core/error.response.js";
 import { hashPassword, comparePassword } from "../utils/password.helper.js";

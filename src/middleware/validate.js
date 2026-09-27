@@ -3,7 +3,6 @@ import { BadRequestError } from '../core/error.response.js';
 
 export const validate = (rules) => {
     return async (req, res, next) => {
-        // Chạy tuần tự từng rule
         for (const rule of rules) {
             await rule.run(req);
         }
@@ -13,13 +12,11 @@ export const validate = (rules) => {
             return next();
         }
 
-        // Gộp tất cả lỗi thành mảng { field, message }
         const formattedErrors = errors.array().map((err) => ({
             field: err.path,
             message: err.msg,
         }));
 
-        // Ném BadRequestError kèm danh sách lỗi chi tiết
         const error = new BadRequestError('Validation failed');
         error.errors = formattedErrors;
         return next(error);

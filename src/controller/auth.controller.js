@@ -1,4 +1,3 @@
-// src/controller/auth.controller.js
 import * as authService from "../services/auth.service.js";
 import catchAsync from "../utils/catchAsync.js";
 import { sendSuccess } from "../utils/responseHelper.js";
@@ -14,7 +13,6 @@ export const login = catchAsync(async (req, res) => {
 });
 
 export const getMe = catchAsync(async (req, res) => {
-  // req.user được gán từ auth.middleware.js sau khi verify token thành công
   const currentUserId = req.user.id;
   const userProfile = await authService.getMe(currentUserId);
   return sendSuccess(res, 200, "Lấy thông tin cá nhân thành công!", userProfile);
