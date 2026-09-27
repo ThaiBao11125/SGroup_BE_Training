@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 import router from "./routes/index.js";
 import { config } from "./config/env.config.js";
 import errorHandler from "./middleware/errorHandler.js";
@@ -9,6 +10,7 @@ const app = express();
 app.use(express.json());
 app.use("/api", router);
 
+app.use('/upload', express.static(path.join(process.cwd(), 'upload')));
 app.use(errorHandler);
 
 const startServer = async () => {
