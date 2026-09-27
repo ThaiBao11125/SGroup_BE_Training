@@ -18,6 +18,7 @@
   "homepage": "https://github.com/ThaiBao11125/SGroup_BE_Training#readme",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1141.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

@@ -1,29 +1,8 @@
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
 import { BadRequestError } from '../core/error.response.js';
 
-const UPLOAD_DIRECTORY = path.join(process.cwd(), 'uploads');
-
-if (!fs.existsSync(UPLOAD_DIRECTORY)) {
-  fs.mkdirSync(UPLOAD_DIRECTORY, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, UPLOAD_DIRECTORY);
-  },
-
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-
-    const sanitizedFilename = `${file.fieldname}-${uniqueSuffix}${ext}`;
-
-    cb(null, sanitizedFilename);
-  }
-});
+const storage = multer.memoryStorage();
 
 const imageFileFilter = (req, file, cb) => {
   const allowedMimeTypes = [
@@ -37,42 +16,91 @@ const imageFileFilter = (req, file, cb) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new BadRequestError('Định dạng file không hợp lệ! Chỉ chấp nhận ảnh (jpeg, jpg, png, webp, gif).'), false);
+    cb(new BadRequestError('Định dạng không hợp lệ! Chỉ chấp nhận file ảnh (jpeg, jpg, png, webp, gif).'), false);
   }
 };
 
-export const multerUpload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 2 * 1024 * 1024,
-  },
-  fileFilter: imageFileFilter
+const documentFileFilter = (req, file, cb) => {
+  const allowedMimeTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/zip',
+    'application/x-zip-compressed',
+    'text/plain',
+    'image/jpeg',
+    'image/png'
+  ];
+
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new BadRequestError(`File "${file.originalname}" không được hỗ trợ! Chỉ chấp nhận tài liệu (pdf, doc, docx, xlsx, txt, zip, png, jpg).`), false);
+  }
+};
+
+const imageUpload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: imageFileFilter,
 });
 
-export const uploadSingleImage = (fieldName = 'file', required = true) => {
+const documentUpload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: documentFileFilter,
+});
+
+export const uploadSingleImage = (fieldName = 'file') => {
   return (req, res, next) => {
-    const upload = multerUpload.single(fieldName);
+    const upload = imageUpload.single(fieldName);
 
     upload(req, res, (err) => {
       if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
-          return next(new BadRequestError('Kích thước file vượt quá giới hạn cho phép (Tối đa 2MB)!'));
+          return next(new BadRequestError('Kích thước ảnh vượt quá giới hạn 2MB!'));
         }
         if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-          return next(new BadRequestError(`Field name không đúng quy định! Vui lòng đặt tên key là '${fieldName}'.`));
+          return next(new BadRequestError(`Field name không đúng quy định! Vui lòng đặt key là '${fieldName}'.`));
         }
-        return next(new BadRequestError(`Lỗi upload file: ${err.message}`));
+        return next(new BadRequestError(`Lỗi upload ảnh: ${err.message}`));
       }
 
-      if (err) {
-        return next(err);
-      }
+      if (err) return next(err);
 
-      if (required && !req.file) {
-        return next(new BadRequestError(`Vui lòng chọn một file để tải lên (key: '${fieldName}')!`));
+      if (!req.file) {
+        return next(new BadRequestError(`Vui lòng chọn một file ảnh để tải lên (key: '${fieldName}')!`));
       }
 
       next();
     });
   };
-}
+};
+
+export const uploadMultipleDocuments = (fieldName = 'documents', maxCount = 5) => {
+  return (req, res, next) => {
+    const upload = documentUpload.array(fieldName, maxCount);
+
+    upload(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return next(new BadRequestError('Có file vượt quá kích thước cho phép (Tối đa 10MB/file)!'));
+        }
+        if (err.code === 'LIMIT_FILE_COUNT') {
+          return next(new BadRequestError(`Vượt quá số lượng file cho phép! Tối đa là ${maxCount} file cùng lúc.`));
+        }
+        if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+          return next(new BadRequestError(`Field name không đúng! Vui lòng đặt tên key là '${fieldName}'.`));
+        }
+        return next(new BadRequestError(`Lỗi upload tài liệu: ${err.message}`));
+      }
+
+      if (err) return next(err);
+
+      if (!req.files || req.files.length === 0) {
+        return next(new BadRequestError(`Vui lòng chọn ít nhất một file tài liệu (key: '${fieldName}')!`));
+      }
+
+      next();
+    });
+  };
+};

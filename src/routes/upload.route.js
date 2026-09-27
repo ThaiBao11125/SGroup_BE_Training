@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import * as uploadController from '../controller/upload.controller.js';
-import { uploadSingleImage } from '../middleware/upload.middleware.js';
+import { uploadSingleImage, uploadMultipleDocuments } from '../middleware/upload.middleware.js';
 
 const router = Router();
 
-router.post('/file', uploadSingleImage('file'), uploadController.uploadSingleFile);
-router.post('/image', uploadSingleImage('image'), uploadController.uploadSingleFile);
-router.post('/avatar', uploadSingleImage('avatar'), uploadController.uploadSingleFile);
+router.post('/image', uploadSingleImage('image'), uploadController.uploadSingleImage);
+
+router.post('/documents', uploadMultipleDocuments('documents', 5), uploadController.uploadMultipleDocuments);
 
 export default router;
